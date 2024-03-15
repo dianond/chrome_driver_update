@@ -30,17 +30,31 @@ fn run() -> Result<String, Box<dyn Error>> {
     let chrome_driver_version = get_chrome_driver_version();
     let chrome_driver_main_version = get_main_version(&chrome_driver_version);
 
+    let mut update_flag = false;
+    let mut url = String::new();
     if chrome_main_version == chrome_driver_main_version {
-        return Ok(String::from("Chrome and Chrome driver version match"));
+        url = get_chrome_driver_url_str(&chrome_main_version);
+        if !url.is_empty() {
+            let remote_version = get_version(&url);
+            if remote_version != chrome_driver_version {
+                update_flag = true;
+            } else {
+                return Ok(String::from("Chrome and Chrome driver version match"));
+            }
+        }
     } else {
+        update_flag = true;
+    }
+
+    if update_flag {
         println!("Chrome and Chrome driver version mismatch");
-        let url = get_chrome_driver_url(&chrome_main_version)?;
+
         if url.is_empty() {
-            return Err("Chrome driver download url not found".into());
+            url = get_chrome_driver_url(&chrome_main_version)?;
         }
 
         println!("Chrome driver download url: {}", url);
-        download_chrome_driver(url.as_str())?;
+        download_chrome_driver(&url)?;
         println!("download Chrome driver finish");
 
         unzip_chrome_driver()?;
@@ -49,9 +63,10 @@ fn run() -> Result<String, Box<dyn Error>> {
         copy_chrome_driver(&chrome_driver_path)?;
         del_temp_file()?;
         del_temp_path()?;
+        Ok(String::from("Finish"))
+    } else {
+        Err("Update not executed".into())
     }
-
-    Ok(String::from("Finish"))
 }
 
 fn run_powershell(command: &str) -> Option<String> {
@@ -94,11 +109,7 @@ fn get_chrome_driver_version() -> String {
         Some(s) => s,
         None => String::from(""),
     };
-    let re = Regex::new(r"\d+\.\d+\.\d+\.\d+").unwrap();
-    for cap in re.captures_iter(&str) {
-        return cap[0].to_string();
-    }
-    return String::from("");
+    get_version(&str)
 }
 
 fn get_chrome_driver_path() -> String {
@@ -109,6 +120,14 @@ fn get_chrome_driver_path() -> String {
     }
 }
 
+fn get_version(str: &str) -> String {
+    let re = Regex::new(r"\d+\.\d+\.\d+\.\d+").unwrap();
+    for cap in re.captures_iter(str) {
+        return cap[0].to_string();
+    }
+    return String::from("");
+}
+
 fn get_main_version(str: &str) -> String {
     let re = Regex::new(r"(1\d{2})\.\d+\.\d+\.\d+").unwrap();
     for cap in re.captures_iter(str) {
@@ -117,14 +136,14 @@ fn get_main_version(str: &str) -> String {
     return String::from("");
 }
 
-fn get_chrome_driver_url(version: &str) -> Result<String, Box<dyn Error>> {
+fn get_chrome_driver_url(main_version: &str) -> Result<String, Box<dyn Error>> {
     let response = get("https://googlechromelabs.github.io/chrome-for-testing/")?;
 
     if response.status().is_success() {
         let body = response.text()?;
         let str = format!(
             r"https://storage.googleapis.com/chrome-for-testing-public/{}\.\d+\.\d+\.\d+/win64/chromedriver-win64.zip",
-            version
+            main_version
         );
         let re = Regex::new(&str).unwrap();
         for cap in re.captures_iter(&body) {
@@ -133,6 +152,13 @@ fn get_chrome_driver_url(version: &str) -> Result<String, Box<dyn Error>> {
     }
 
     Err("get url failed".into())
+}
+
+fn get_chrome_driver_url_str(main_version: &str) -> String {
+    match get_chrome_driver_url(main_version) {
+        Ok(s) => s,
+        Err(_e) => String::from(""),
+    }
 }
 
 fn download_chrome_driver(url: &str) -> Result<(), Box<dyn Error>> {
