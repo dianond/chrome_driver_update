@@ -61,6 +61,7 @@ fn run_powershell(command: &str) -> Option<String> {
         .expect("Failed to execute command");
     if output.status.success() {
         let stdout = String::from_utf8(output.stdout).expect("Not UTF-8");
+        let stdout = stdout.trim().to_string();
         return Some(stdout);
     }
     return None;
@@ -72,7 +73,9 @@ fn run_cmd(command: &str) -> Option<String> {
         .output()
         .expect("Failed to execute command");
     if output.status.success() {
-        return Some(String::from_utf8(output.stdout).expect("Not UTF-8"));
+        let stdout = String::from_utf8(output.stdout).expect("Not UTF-8");
+        let stdout = stdout.trim().to_string();
+        return Some(stdout);
     }
     return None;
 }
@@ -87,10 +90,15 @@ fn get_chrome_version() -> String {
 
 fn get_chrome_driver_version() -> String {
     let command = "chromedriver --version";
-    match run_powershell(command) {
+    let str = match run_powershell(command) {
         Some(s) => s,
         None => String::from(""),
+    };
+    let re = Regex::new(r"\d+\.\d+\.\d+\.\d+").unwrap();
+    for cap in re.captures_iter(&str) {
+        return cap[0].to_string();
     }
+    return String::from("");
 }
 
 fn get_chrome_driver_path() -> String {
