@@ -36,10 +36,10 @@ fn run() -> Result<String, Box<dyn Error>> {
         url = get_chrome_driver_url_str(&chrome_main_version);
         if !url.is_empty() {
             let remote_version = get_version(&url);
-            if remote_version != chrome_driver_version {
-                update_flag = true;
-            } else {
+            if remote_version == chrome_driver_version {
                 return Ok(String::from("Chrome and Chrome driver version match"));
+            } else {
+                update_flag = true;
             }
         }
     } else {
