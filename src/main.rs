@@ -30,7 +30,6 @@ fn run() -> Result<String, Box<dyn Error>> {
     let chrome_driver_version = get_chrome_driver_version();
     let chrome_driver_main_version = get_main_version(&chrome_driver_version);
 
-    let mut update_flag = false;
     let mut url = String::new();
     if chrome_main_version == chrome_driver_main_version {
         url = get_chrome_driver_url_str(&chrome_main_version);
@@ -38,35 +37,29 @@ fn run() -> Result<String, Box<dyn Error>> {
             let remote_version = get_version(&url);
             if remote_version == chrome_driver_version {
                 return Ok(String::from("Chrome and Chrome driver version match"));
-            } else {
-                update_flag = true;
             }
+        } else {
+            return Err("Update not executed".into());
         }
-    } else {
-        update_flag = true;
     }
 
-    if update_flag {
-        println!("Chrome and Chrome driver version mismatch");
+    println!("Chrome and Chrome driver version mismatch");
 
-        if url.is_empty() {
-            url = get_chrome_driver_url(&chrome_main_version)?;
-        }
-
-        println!("Chrome driver download url: {}", url);
-        download_chrome_driver(&url)?;
-        println!("download Chrome driver finish");
-
-        unzip_chrome_driver()?;
-        close_chrome_driver();
-        println!("Chrome driver path: {}", chrome_driver_path);
-        copy_chrome_driver(&chrome_driver_path)?;
-        del_temp_file()?;
-        del_temp_path()?;
-        Ok(String::from("Finish"))
-    } else {
-        Err("Update not executed".into())
+    if url.is_empty() {
+        url = get_chrome_driver_url(&chrome_main_version)?;
     }
+
+    println!("Chrome driver download url: {}", url);
+    download_chrome_driver(&url)?;
+    println!("download Chrome driver finish");
+
+    unzip_chrome_driver()?;
+    close_chrome_driver();
+    println!("Chrome driver path: {}", chrome_driver_path);
+    copy_chrome_driver(&chrome_driver_path)?;
+    del_temp_file()?;
+    del_temp_path()?;
+    Ok(String::from("Finish"))
 }
 
 fn run_powershell(command: &str) -> Option<String> {
