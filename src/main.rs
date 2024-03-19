@@ -51,7 +51,7 @@ fn run() -> Result<String, Box<dyn Error>> {
 
     println!("Chrome driver download url: {}", url);
     download_chrome_driver(&url)?;
-    println!("download Chrome driver finish");
+    println!("Chrome driver download finish");
 
     unzip_chrome_driver()?;
     close_chrome_driver();
