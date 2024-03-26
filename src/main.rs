@@ -90,27 +90,18 @@ fn run_cmd(command: &str) -> Option<String> {
 
 fn get_chrome_version() -> String {
     let command = "(Get-Item 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe').VersionInfo.ProductVersion";
-    match run_powershell(command) {
-        Some(s) => s,
-        None => String::from(""),
-    }
+    run_powershell(command).unwrap_or_else(|| String::from(""))
 }
 
 fn get_chrome_driver_version() -> String {
     let command = "chromedriver --version";
-    let str = match run_powershell(command) {
-        Some(s) => s,
-        None => String::from(""),
-    };
+    let str = run_powershell(command).unwrap_or_else(|| String::from(""));
     get_version(&str)
 }
 
 fn get_chrome_driver_path() -> String {
     let command = "where chromedriver";
-    match run_cmd(command) {
-        Some(s) => s,
-        None => String::from(""),
-    }
+    run_cmd(command).unwrap_or_else(|| String::from(""))
 }
 
 fn get_version(str: &str) -> String {
@@ -148,10 +139,7 @@ fn get_chrome_driver_url(main_version: &str) -> Result<String, Box<dyn Error>> {
 }
 
 fn get_chrome_driver_url_str(main_version: &str) -> String {
-    match get_chrome_driver_url(main_version) {
-        Ok(s) => s,
-        Err(_e) => String::from(""),
-    }
+    get_chrome_driver_url(main_version).unwrap_or_else(|_e| String::from(""))
 }
 
 fn download_chrome_driver(url: &str) -> Result<(), Box<dyn Error>> {
