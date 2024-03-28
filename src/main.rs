@@ -18,7 +18,6 @@ fn main() {
 
 fn run() -> Result<String, Box<dyn Error>> {
     let chrome_driver_path = get_chrome_driver_path();
-    let chrome_driver_path = chrome_driver_path.trim();
     if chrome_driver_path.is_empty() {
         return Err("Chrome driver path not found".into());
     }
