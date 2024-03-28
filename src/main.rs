@@ -1,7 +1,9 @@
+mod run_shell;
+
 use regex::Regex;
 use reqwest::blocking::get;
 use std::error::Error;
-use std::process::Command;
+use run_shell::{run_cmd, run_powershell};
 
 fn main() {
     match run() {
@@ -60,32 +62,6 @@ fn run() -> Result<String, Box<dyn Error>> {
     del_temp_file()?;
     del_temp_path()?;
     Ok(String::from("Finish"))
-}
-
-fn run_shell(shell_name : &str, command: &str) -> Option<String> {
-    let args = match shell_name {
-        "powershell" => ["-Command", command],
-        "cmd" => ["/C", command],
-        _ => ["-c", command],
-    };
-    let output = Command::new(shell_name)
-        .args(args)
-        .output()
-        .expect("Failed to execute command");
-    if output.status.success() {
-        let stdout = String::from_utf8(output.stdout).expect("Not UTF-8");
-        let stdout = stdout.trim().to_string();
-        return Some(stdout);
-    }
-    return None;
-}
-
-fn run_powershell(command: &str) -> Option<String> {
-    run_shell("powershell", command)
-}
-
-fn run_cmd(command: &str) -> Option<String> {
-    run_shell("cmd", command)
 }
 
 fn get_chrome_version() -> String {
