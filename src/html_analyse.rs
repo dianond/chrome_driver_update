@@ -10,7 +10,8 @@ pub fn check_url(html: &str, url: &str) -> bool {
 
     let result = trs
         .into_iter()
-        .filter(|tr| tr.text().collect::<Vec<_>>().join(" ").contains(url)) // Convert Text to string before using contains method
+        // Convert Text to string before using contains method
+        .filter(|tr| tr.text().collect::<Vec<_>>().join(" ").contains(url))
         .collect::<Vec<ElementRef>>();
 
     return result.len() > 0;
