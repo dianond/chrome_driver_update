@@ -1,9 +1,11 @@
+mod html_analyse;
 mod run_shell;
 
+use html_analyse::check_url;
 use regex::Regex;
 use reqwest::blocking::get;
-use std::error::Error;
 use run_shell::{run_cmd, run_powershell};
+use std::error::Error;
 
 fn main() {
     match run() {
@@ -106,7 +108,10 @@ fn get_chrome_driver_url(main_version: &str) -> Result<String, Box<dyn Error>> {
         );
         let re = Regex::new(&str).unwrap();
         for cap in re.captures_iter(&body) {
-            return Ok(cap[0].to_string());
+            let url = cap[0].to_string();
+            if check_url(&body, &url) {
+                return Ok(url);
+            }
         }
     }
 
