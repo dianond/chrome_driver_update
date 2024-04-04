@@ -2,7 +2,6 @@ mod html_analyse;
 mod run_shell;
 mod execute;
 
-use std::error::Error;
 use execute::run;
 
 fn main() {

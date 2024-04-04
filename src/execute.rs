@@ -105,7 +105,7 @@ fn get_chrome_driver_url(main_version: &str) -> Result<String, Box<dyn Error>> {
 }
 
 fn get_chrome_driver_url_str(main_version: &str) -> String {
-    get_chrome_driver_url(main_version).unwrap_or_else(|| String::from(""))
+    get_chrome_driver_url(main_version).unwrap_or_else(|_| String::from(""))
 }
 
 fn download_chrome_driver(url: &str) -> Result<(), Box<dyn Error>> {
