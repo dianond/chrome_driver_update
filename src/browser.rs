@@ -12,7 +12,6 @@ pub(crate) enum BrowserEnum {
     Edge,
 }
 
-#[warn(dead_code)]
 impl Display for BrowserEnum {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
