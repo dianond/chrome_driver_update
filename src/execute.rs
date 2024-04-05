@@ -23,7 +23,7 @@ pub fn run(browser_enum: BrowserEnum) -> Result<String, Box<dyn Error>> {
                 return Ok(format!("{} and {} version match", browser.browser, browser_driver.name));
             }
         } else {
-            return Err("Update not executed".into());
+            return Err(format!("{} download url not found", browser_driver.name).into());
         }
     }
 
