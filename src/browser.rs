@@ -177,20 +177,20 @@ impl BrowserDriver {
                 let command = "Remove-Item -Path chromedriver-win64 -Recurse";
                 match run_powershell(command) {
                     Some(_) => {
-                        println!("Chrome driver temp path delete success");
+                        println!("chromedriver temp path delete success");
                         Ok(())
                     }
-                    None => Err("Chrome driver temp path delete failed".into()),
+                    None => Err("chromedriver temp path delete failed".into()),
                 }
             }
             BrowserEnum::Edge => {
                 let command = "Remove-Item -Path Driver_Notes -Recurse && Remove-Item -Path msedgedriver.exe";
                 match run_powershell(command) {
                     Some(_) => {
-                        println!("Edge driver temp path delete success");
+                        println!("msedgedriver temp path delete success");
                         Ok(())
                     }
-                    None => Err("Edge driver temp path delete failed".into()),
+                    None => Err("msedgedriver temp path delete failed".into()),
                 }
             }
         }
