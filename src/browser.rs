@@ -69,20 +69,9 @@ impl BrowserDriver {
             BrowserEnum::Edge => String::from("msedgedriver"),
         };
 
-        let version = match browser_enum {
-            BrowserEnum::Chrome => {
-                let command = format!("{} --version", &name);
-                let str = run_powershell(&command).unwrap_or_else(|| String::from(""));
-                get_version(&str)
-            }
-            BrowserEnum::Edge => {
-                let command = format!("{} --version", &name);
-                let str = run_powershell(&command).unwrap_or_else(|| String::from(""));
-                get_version(&str)
-            }
-        };
-
-        let main_version = get_main_version(&version);
+        let command = format!("{} --version", &name);
+        let str = run_powershell(&command).unwrap_or_else(|| String::from(""));
+        let (version, main_version) = get_version(&str);
 
         let driver_path = get_browser_driver_path(&name);
 

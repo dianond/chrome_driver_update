@@ -19,7 +19,7 @@ pub fn run(browser_enum: BrowserEnum) -> Result<String, Box<dyn Error>> {
         url = browser_driver.get_driver_url(&browser);
         if !url.is_empty() {
             let remote_version = get_version(&url);
-            if remote_version == browser_driver.version {
+            if remote_version.0 == browser_driver.version {
                 return Ok(format!("{} and {} version match", browser.browser, browser_driver.name));
             }
         } else {
