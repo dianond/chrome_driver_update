@@ -183,7 +183,11 @@ impl BrowserDriver {
                 }
             }
             BrowserEnum::Edge => {
-                let command = "Remove-Item -Path Driver_Notes -Recurse && Remove-Item -Path msedgedriver.exe";
+                let command = "Remove-Item -Path Driver_Notes -Recurse";
+                if let None = run_powershell(command) {
+                    return Err("msedgedriver temp path delete failed".into());
+                }
+                let command = "Remove-Item -Path msedgedriver.exe";
                 match run_powershell(command) {
                     Some(_) => {
                         println!("msedgedriver temp path delete success");
