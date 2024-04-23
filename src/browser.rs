@@ -84,7 +84,7 @@ impl BrowserDriver {
                 get_chrome_driver_url(&browser.main_version).unwrap_or_else(|_| String::from(""))
             }
             BrowserEnum::Edge => {
-                get_edge_driver_url(&browser.version).unwrap_or_else(|_| String::from(""))
+                get_edge_driver_url(&browser.version)
             }
         }
     }
@@ -210,23 +210,12 @@ fn get_chrome_driver_url(main_version: &str) -> Result<String, Box<dyn Error>> {
     Err("get url failed".into())
 }
 
-fn get_edge_driver_url(version: &str) -> Result<String, Box<dyn Error>> {
-    let response = get("https://developer.microsoft.com/zh-cn/microsoft-edge/tools/webdriver/?form=MA13LH")?;
-
-    if response.status().is_success() {
-        let body = response.text()?;
-        let str = format!(
-            r"https://msedgedriver.azureedge.net/{}/edgedriver_win64.zip",
-            version
-        );
-        let re = Regex::new(&str).unwrap();
-        for cap in re.captures_iter(&body) {
-            let url = cap[0].to_string();
-            return Ok(url);
-        }
-    }
-
-    Err("get url failed".into())
+fn get_edge_driver_url(version: &str) -> String {
+    let url = format!(
+        r"https://msedgedriver.azureedge.net/{}/edgedriver_win64.zip",
+        version
+    );
+    return url;
 }
 
 fn get_browser_driver_path(name: &str) -> String {
